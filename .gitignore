@@ -1,0 +1,7 @@
+# Build directories
+build/
+cmake-*/
+
+# Jetbrains stuff
+.idea
+
