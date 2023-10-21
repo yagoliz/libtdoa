@@ -1,8 +1,7 @@
-// Copyright (c) 2023.
+// SPDX-License-Identifier: Apache-2.0
 
-//
-// Created by Yago Lizarribar on 21/10/23.
-//
+// Copyright 2023 Yago Lizarribar
+
 
 #ifndef LIBTDOA_ALGEBRA_H
 #define LIBTDOA_ALGEBRA_H

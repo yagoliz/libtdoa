@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: Apache-2.0
+
+// Copyright 2023 Yago Lizarribar
+
+
 #ifndef LIBDTDOA_TDOALOCATOR_H
 #define LIBDTDOA_TDOALOCATOR_H
 

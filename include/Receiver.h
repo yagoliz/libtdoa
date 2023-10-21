@@ -1,8 +1,7 @@
-// Copyright (c) 2023.
+// SPDX-License-Identifier: Apache-2.0
 
-//
-// Created by Yago Lizarribar on 20/10/23.
-//
+// Copyright 2023 Yago Lizarribar
+
 
 #ifndef LIBDTDOA_RECEIVER_H
 #define LIBDTDOA_RECEIVER_H
