@@ -12,6 +12,9 @@ namespace libtdoa {
 
     class Receiver {
     public:
+        Receiver(const double x, const double y, const double t): x{x}, y{y}, timestamp{t} {}
+        Receiver(const double x, const double y): x{x}, y{y}, timestamp{0.0} {}
+
         double x, y;
         double timestamp;
     };
