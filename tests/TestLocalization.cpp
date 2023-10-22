@@ -63,6 +63,27 @@ TEST(TestLocalization, testNLLS) {
     EXPECT_NEAR(result[1],4.0,1e-5);
 }
 
+TEST(TestLocalization, testFull) {
+    auto r1 = libtdoa::Receiver{0.0, 0.0, 5.0};
+    auto r2 = libtdoa::Receiver{3.0, 1.0, 3.0};
+    auto r3 = libtdoa::Receiver{0.0, 3.0, std::sqrt(10.0)};
+    auto r4 = libtdoa::Receiver{6.0, 4.0, 3.0};
+    auto r5 = libtdoa::Receiver{3.0, 14.0, 10.0};
+
+    // Initial solution with linear methods
+    auto r = std::vector<libtdoa::Receiver> {r1,r2,r3,r4,r5};
+    auto init = libtdoa::initialGuess(r);
+
+    EXPECT_NEAR(init[0],3.0,1e-5);
+    EXPECT_NEAR(init[1],4.0,1e-5);
+
+    // Refine with Non-Linear methods
+    auto result = libtdoa::nonlinearOptimization(r, init);
+
+    EXPECT_NEAR(result[0],3.0,1e-5);
+    EXPECT_NEAR(result[1],4.0,1e-5);
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
