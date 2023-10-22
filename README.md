@@ -1,6 +1,6 @@
-# libtdoa - Time-Difference of Arrival (TDOA) in C++
+# tdoa++ - Time-Difference of Arrival (TDOA) in C++
 
-This is a small library `libtdoa` that solves the TDOA equations in 3 different ways:
+This is a small library `tdoapp` that solves the TDOA equations in 3 different ways:
 
 - Exact solution. Based on Fang's algorithm, when the number of receivers is 3.
 - Least Squares. When the number of sensors > 3
@@ -45,7 +45,7 @@ cmake ..
 make -j$nproc
 ```
 
-Afterwards, you can run the tests by issuing this command:
+Then, you can run the tests by issuing this command:
 ```bash
 ctest
 ```
