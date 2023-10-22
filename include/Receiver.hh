@@ -6,7 +6,7 @@
 #ifndef LIBDTDOA_RECEIVER_H
 #define LIBDTDOA_RECEIVER_H
 
-namespace libtdoa {
+namespace tdoapp {
 
     const double kSPEEDOFLIGHT = 299'792'458.0;
 

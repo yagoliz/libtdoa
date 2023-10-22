@@ -3,12 +3,12 @@
 // Copyright 2023 Yago Lizarribar
 
 
-#ifndef LIBTDOA_ALGEBRA_H
-#define LIBTDOA_ALGEBRA_H
+#ifndef LIBTDOA_ALGEBRA_HH
+#define LIBTDOA_ALGEBRA_HH
 
 #include <cmath>
 
-namespace libtdoa {
+namespace tdoapp {
 
     inline double norm_sq(const double x, const double y) {
         return std::pow(x,2) + std::pow(y,2);
@@ -23,4 +23,4 @@ namespace libtdoa {
     }
 }
 
-#endif //LIBTDOA_ALGEBRA_H
+#endif //LIBTDOA_ALGEBRA_HH

@@ -8,8 +8,8 @@
 #include <boost/program_options.hpp>
 #include <nlohmann/json.hpp>
 
-#include "../include/Receiver.h"
-#include "../include/TdoaLocator.h"
+#include "../include/Receiver.hh"
+#include "../include/TdoaLocator.hh"
 
 using std::cout;
 using std::cerr;
@@ -22,7 +22,6 @@ using nlohmann::json;
 struct options {
     int optimization_level = 1;
     std::string gNBFile;
-    std::string TOAFile;
     std::string output;
 };
 
@@ -31,8 +30,7 @@ int parse_commandline(int argc, char** argv, options &opt) {
     po::options_description desc("TdoaCLI. Command-Line utility to solve TDOA problems.\nAllowed options:");
     desc.add_options()
             ("help,h", "produce help message")
-            ("gNB,g", po::value<std::string>(), "JSON file with gNB positions")
-            ("TOA,t", po::value<std::string>(), "JSON file with TOA per gNB")
+            ("gNB,g", po::value<std::string>(), "JSON file with gNB positions & timestamps")
             ("method", po::value<int>(&opt.optimization_level)->default_value(1), "Method to use (1: linear, 2: nonlinear). Default: 1")
             ("output", po::value<std::string>(&opt.output)->default_value("stdout"), "Where to dump the output: (stdout or file)")
             ;
@@ -58,25 +56,14 @@ int parse_commandline(int argc, char** argv, options &opt) {
         return 1;
     }
 
-    // Also ToA values are mandatory
-    if (vm.count("TOA")) {
-        auto toafile = vm["TOA"].as<std::string>();
-        cout << "Selected TOA file: " << toafile << endl;
-        opt.TOAFile = toafile;
-    } else {
-        cerr << "Must provide TOA values" << endl;
-        cerr << desc << endl;
-        return 1;
-    }
-
     // Last we select the method
     if (vm.count("method")) {
         int method = vm["method"].as<int>();
-        cout << "Method was set to: "
-             << method << "." << endl;
+        std::string m = method == 1 ? "Linear/Least Squares" : "Non-Linear Least Squares";
+        cout << "Optimization Method was set to: " << m << "." << endl;
         opt.optimization_level = method;
     } else {
-        cerr << "Compression level was not set." << endl;
+        cerr << "Method level was not set. Linear/Least Squares optimization will be run" << endl;
         cout << desc << endl;
     }
 
@@ -97,58 +84,43 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    // gNB file should contain a vector with a "measurements" field
+    // Inside, there should a vector with N positions to analyze
     auto gNBs = json::parse(ifs);
-    std::vector<libtdoa::Receiver> receivers;
-    if (gNBs.contains("gNBs") && gNBs["gNBs"].is_object()) {
-        for (auto& [key, value] : gNBs["gNBs"].items()) {
-            if (value.is_array() && value.size() == 2) {
-                receivers.emplace_back(value[0].get<double>(), value[1].get<double>());
-            }
-        }
-    } else {
-        cerr << "Error parsing gNB file." << endl;
-        return 1;
-    }
-
-    // Get TOA values and run optimization
-    std::ifstream toafs(opt->TOAFile);
-    if (!toafs.is_open()) {
-        cerr << "Error: Could not open TOA file" << endl;
-        return 1;
-    }
-
-    auto toas = json::parse(toafs);
     std::vector<std::array<double,2>> result;
-    if (toas.is_object()) {
-        for (auto& [key, value] : toas.items()) {
+    if (gNBs.contains("measurements")) {
 
-            // Populate the receivers with the timestamps
-            if (value.is_array() && value.size() == receivers.size()) {
-                for (int j = 0; j < receivers.size(); j++) {
-                    receivers[j].timestamp = value[j].get<double>();
+        // Main loop over the received measurements
+        for (const auto& measurement : gNBs["measurements"]) {
+            // Looping over how many gNBs
+            std::vector<tdoapp::Receiver> receivers;
+            for (const auto& [key, values] : measurement.items()) {
+                if (values.is_array() && values.size() == 3) {
+                    receivers.emplace_back(values[0].get<double>(),
+                                           values[1].get<double>(),
+                                           values[2].get<double>());
+                } else {
+                    cerr << "Wrong format for JSON value in measurement. Expected 3-element array" << endl
+                        << "The array assertion was: " << values.is_array() << ". The size was: " << values.size()
+                        << "" << endl;
                 }
-            } else {
-                cerr << "For key: " << key << ", the number of TOA values is " << value.size()
-                    << ", but there are " << receivers.size() << " receivers..." << endl;
-
-                return 1;
             }
 
             // Run the optimization routines
-            auto init = libtdoa::initialGuess(receivers);
+            auto init = tdoapp::initialGuess(receivers);
 
             if (opt->optimization_level == 2) {
-                auto nlls = libtdoa::nonlinearOptimization(receivers, init);
+                auto nlls = tdoapp::nonlinearOptimization(receivers, init);
                 result.emplace_back(std::array<double,2>{nlls[0], nlls[1]});
             } else {
                 result.emplace_back(std::array<double,2>{init[0], init[1]});
             }
         }
+
     } else {
-        cerr << "Error parsing TOA file." << endl;
+        cerr << "Error parsing gNB file." << endl;
         return 1;
     }
-
 
     // Write output to file or stdout
     auto writeToStdout = opt->output == "stdout";

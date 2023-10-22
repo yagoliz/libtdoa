@@ -3,14 +3,14 @@
 // Copyright 2023 Yago Lizarribar
 
 
-#ifndef LIBTDOA_TDOAERROR_H
-#define LIBTDOA_TDOAERROR_H
+#ifndef LIBTDOA_TDOAERROR_HH
+#define LIBTDOA_TDOAERROR_HH
 
 #include <ceres/jet.h>
-#include "Receiver.h"
-#include "Algebra.h"
+#include "Receiver.hh"
+#include "Algebra.hh"
 
-namespace libtdoa {
+namespace tdoapp {
     class TdoaError {
         const Receiver r1_, r2_;
         static constexpr double epsilon = 1e-8;
@@ -29,4 +29,4 @@ namespace libtdoa {
     };
 }
 
-#endif //LIBTDOA_TDOAERROR_H
+#endif //LIBTDOA_TDOAERROR_HH

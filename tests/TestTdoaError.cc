@@ -4,14 +4,14 @@
 
 
 #include <gtest/gtest.h>
-#include "../include/Receiver.h"
-#include "../include/TdoaError.h"
+#include "../include/Receiver.hh"
+#include "../include/TdoaError.hh"
 
 TEST(TestTdoaError, testTdoaError) {
-auto r1 = libtdoa::Receiver{1.0, 1.0, 4.0};
-auto r2 = libtdoa::Receiver{2.0, 4.0, 8.0};
+auto r1 = tdoapp::Receiver{1.0, 1.0, 4.0};
+auto r2 = tdoapp::Receiver{2.0, 4.0, 8.0};
 
-auto err = libtdoa::TdoaError{r1, r2};
+auto err = tdoapp::TdoaError{r1, r2};
 
 double residual = 0.0;
 double x = 0.0;

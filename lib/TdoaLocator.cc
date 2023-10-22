@@ -4,10 +4,10 @@
 
 #include <Eigen/SVD>
 
-#include "../include/TdoaLocator.h"
-#include "../include/Algebra.h"
+#include "../include/TdoaLocator.hh"
+#include "../include/Algebra.hh"
 
-namespace libtdoa {
+namespace tdoapp {
     Eigen::Vector2d initialGuess(const std::vector<Receiver> &receivers) {
 
         // For Least Squares, we need at least 4 receivers (in 2D case)

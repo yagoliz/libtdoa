@@ -1,6 +1,6 @@
 # Basic setup
 cmake_minimum_required(VERSION 3.26)
-project(libtdoa)
+project(tdoapp)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -9,11 +9,11 @@ find_package (Eigen3 REQUIRED NO_MODULE)
 find_package(Ceres REQUIRED)
 
 # Compiling our precious library
-add_library(libtdoa SHARED lib/TdoaLocator.cpp
-        include/Receiver.h
-        include/TdoaError.h
-        include/Algebra.h)
-target_link_libraries(libtdoa Eigen3::Eigen Ceres::ceres)
+add_library(tdoapp SHARED lib/TdoaLocator.cc
+        include/Receiver.hh
+        include/TdoaError.hh
+        include/Algebra.hh)
+target_link_libraries(tdoapp Eigen3::Eigen Ceres::ceres)
 
 # Executables
 add_subdirectory(src)

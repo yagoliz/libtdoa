@@ -11,10 +11,10 @@
 #include <Eigen/Dense>
 #include <ceres/ceres.h>
 
-#include "Receiver.h"
-#include "TdoaError.h"
+#include "Receiver.hh"
+#include "TdoaError.hh"
 
-namespace libtdoa{
+namespace tdoapp {
     // Linearized TDOA equations
     Eigen::Vector2d initialGuess(const std::vector<Receiver>& receivers);
     Eigen::Vector2d linearTDOA(const std::vector<Receiver>& receivers);
