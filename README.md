@@ -22,19 +22,19 @@ To install them you can use the following commands.
 
 On Debian-based systems:
 ```bash
-sudo apt install libeigen3-dev libceres-dev libgtest-dev
+sudo apt install libeigen3-dev libceres-dev libgtest-dev libboost-dev nlohmann-json3-dev
 ```
 
 On Arch Linux and derivatives:
 ```bash
-sudo pacman -Syyu eigen ceres-solver gtest
+sudo pacman -Syyu eigen ceres-solver gtest boost nlohmann-json
 ```
 
 ### MacOS
 
 If you have homebrew installed:
 ```bash
-brew install eigen ceres-solver googletest
+brew install eigen ceres-solver googletest boost nlohmann-json
 ```
 
 ## Building

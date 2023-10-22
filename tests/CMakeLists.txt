@@ -1,7 +1,6 @@
 find_package(GTest REQUIRED)
 
-add_executable(TestAlgebra TestAlgebra.cpp
-)
+add_executable(TestAlgebra TestAlgebra.cpp)
 target_link_libraries(TestAlgebra GTest::GTest GTest::Main Eigen3::Eigen Ceres::ceres)
 
 add_executable(TestTdoaError TestTdoaError.cpp)

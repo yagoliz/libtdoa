@@ -15,6 +15,9 @@ add_library(libtdoa SHARED lib/TdoaLocator.cpp
         include/Algebra.h)
 target_link_libraries(libtdoa Eigen3::Eigen Ceres::ceres)
 
+# Executables
+add_subdirectory(src)
+
 # Testing
 enable_testing()
 add_subdirectory(tests)
