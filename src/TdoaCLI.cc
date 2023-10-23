@@ -3,6 +3,7 @@
 // Copyright (c) 2023 Yago Lizarribar
 
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 
 #include <boost/program_options.hpp>
@@ -127,10 +128,12 @@ int main(int argc, char** argv) {
     std::function<void(const std::array<double,2>&)> writeFn;
 
     if (writeToStdout) {
-        writeFn = [](const std::array<double,2>& values) { std::cout << "X: " << values[0] << ", Y: " << values[1] << endl; };
+        writeFn = [](const std::array<double,2>& values) { std::cout << std::fixed << std::setprecision(5) << "X: " << values[0] << ", Y: " << values[1] << endl; };
     } else {
-        std::ofstream outFile(opt->output);
-        writeFn = [&outFile](const std::array<double,2>& values) { outFile << "X: " << values[0] << ", Y: " << values[1] << endl; };
+        auto outFile = std::make_shared<std::ofstream>(opt->output);
+        writeFn = [outFile](const std::array<double,2>& values) mutable{
+            *outFile << std::fixed << std::setprecision(5) << "X: " << values[0] << ", Y: " << values[1] << endl;
+        };
     }
 
     // Loop through the vector and write values to the appropriate target
