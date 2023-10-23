@@ -128,7 +128,9 @@ int main(int argc, char** argv) {
     std::function<void(const std::array<double,2>&)> writeFn;
 
     if (writeToStdout) {
-        writeFn = [](const std::array<double,2>& values) { std::cout << std::fixed << std::setprecision(5) << "X: " << values[0] << ", Y: " << values[1] << endl; };
+        writeFn = [](const std::array<double,2>& values) {
+            std::cout << std::fixed << std::setprecision(5) << "X: " << values[0] << ", Y: " << values[1] << endl;
+        };
     } else {
         auto outFile = std::make_shared<std::ofstream>(opt->output);
         writeFn = [outFile](const std::array<double,2>& values) mutable{
