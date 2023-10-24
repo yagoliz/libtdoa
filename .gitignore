@@ -4,7 +4,7 @@ cmake-*/
 
 # Do not consider any file but templates in the templates/ folder
 templates/*
-!templates/gNB-template.json
+!templates/receiver-template.json
 
 # Jetbrains stuff
 .idea

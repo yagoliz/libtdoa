@@ -22,7 +22,7 @@ using nlohmann::json;
 
 struct options {
     int optimization_level = 1;
-    std::string gNBFile;
+    std::string receiverFile;
     std::string output;
 };
 
@@ -31,9 +31,9 @@ int parse_commandline(int argc, char** argv, options &opt) {
     po::options_description desc("TdoaCLI. Command-Line utility to solve TDOA problems.\nAllowed options:");
     desc.add_options()
             ("help,h", "produce help message")
-            ("gNB,g", po::value<std::string>(), "JSON file with gNB positions & timestamps")
-            ("method", po::value<int>(&opt.optimization_level)->default_value(1), "Method to use (1: linear, 2: nonlinear). Default: 1")
-            ("output", po::value<std::string>(&opt.output)->default_value("stdout"), "Where to dump the output: (stdout or file)")
+            ("receiver,r", po::value<std::string>(), "JSON file with receiver positions & timestamps")
+            ("method,m", po::value<int>(&opt.optimization_level)->default_value(1), "Method to use (1: linear, 2: nonlinear). Default: 1")
+            ("output,o", po::value<std::string>(&opt.output)->default_value("stdout"), "Where to dump the output: (stdout or file)")
             ;
 
     po::variables_map vm;
@@ -46,13 +46,13 @@ int parse_commandline(int argc, char** argv, options &opt) {
         return 1;
     }
 
-    // gNB file is mandatory
-    if (vm.count("gNB")) {
-        auto gnbfile = vm["gNB"].as<std::string>();
-        cout << "Selected gNB file: " << gnbfile << endl;
-        opt.gNBFile = gnbfile;
+    // receiver file is mandatory
+    if (vm.count("receiver")) {
+        auto receiverfile = vm["receiver"].as<std::string>();
+        cout << "Selected receiver file: " << receiverfile << endl;
+        opt.receiverFile = receiverfile;
     } else {
-        cerr << "Must provide gNB positions" << endl;
+        cerr << "Must provide receiver positions" << endl;
         cerr << desc << endl;
         return 1;
     }
@@ -79,25 +79,25 @@ int main(int argc, char** argv) {
     }
 
     // Get receivers information
-    std::ifstream ifs(opt->gNBFile);
+    std::ifstream ifs(opt->receiverFile);
     if (!ifs.is_open()) {
-        cerr << "Error: Could not open gNB file" << endl;
+        cerr << "Error: Could not open receiver file" << endl;
         return 1;
     }
 
-    // gNB file should contain a vector with a "measurements" field
+    // receiver file should contain a vector with a "measurements" field
     // Inside, there should a vector with N positions to analyze
-    auto gNBs = json::parse(ifs);
+    auto receivers = json::parse(ifs);
     std::vector<std::array<double,2>> result;
-    if (gNBs.contains("measurements")) {
+    if (receivers.contains("measurements")) {
 
         // Main loop over the received measurements
-        for (const auto& measurement : gNBs["measurements"]) {
-            // Looping over how many gNBs
-            std::vector<tdoapp::Receiver> receivers;
+        for (const auto& measurement : receivers["measurements"]) {
+            // Looping over how many receivers
+            std::vector<tdoapp::Receiver> r;
             for (const auto& [key, values] : measurement.items()) {
                 if (values.is_array() && values.size() == 3) {
-                    receivers.emplace_back(values[0].get<double>(),
+                    r.emplace_back(values[0].get<double>(),
                                            values[1].get<double>(),
                                            values[2].get<double>());
                 } else {
@@ -108,10 +108,10 @@ int main(int argc, char** argv) {
             }
 
             // Run the optimization routines
-            auto init = tdoapp::initialGuess(receivers);
+            auto init = tdoapp::initialGuess(r);
 
             if (opt->optimization_level == 2) {
-                auto nlls = tdoapp::nonlinearOptimization(receivers, init);
+                auto nlls = tdoapp::nonlinearOptimization(r, init);
                 result.emplace_back(std::array<double,2>{nlls[0], nlls[1]});
             } else {
                 result.emplace_back(std::array<double,2>{init[0], init[1]});
@@ -119,7 +119,7 @@ int main(int argc, char** argv) {
         }
 
     } else {
-        cerr << "Error parsing gNB file." << endl;
+        cerr << "Error parsing receiver file." << endl;
         return 1;
     }
 
