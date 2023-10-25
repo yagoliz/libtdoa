@@ -29,3 +29,56 @@ if (BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif (BUILD_TESTS)
+
+# Installation
+install(TARGETS tdoapp
+        EXPORT tdoappTargets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+        DESTINATION include/tdoapp
+        FILES_MATCHING PATTERN "*.hh")
+
+# Uninstallation target
+if(NOT TARGET uninstall)
+    configure_file(
+            "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+            "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+            IMMEDIATE @ONLY)
+
+    add_custom_target(uninstall
+            COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+endif()
+
+# Cmake export
+include(CMakePackageConfigHelpers)
+
+# Create tdoappConfig.cmake
+configure_package_config_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/tdoappConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/tdoappConfig.cmake
+        INSTALL_DESTINATION lib/cmake/tdoapp
+)
+
+# Create tdoappConfigVersion.cmake
+write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/tdoappConfigVersion.cmake
+        VERSION "1.0.0" # specify your library version here
+        COMPATIBILITY SameMajorVersion
+)
+
+# Install the library's export set (targets)
+install(EXPORT tdoappTargets
+        FILE tdoappTargets.cmake
+        NAMESPACE tdoapp::
+        DESTINATION lib/cmake/tdoapp
+)
+
+# Install the config and version files
+install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/tdoappConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/tdoappConfigVersion.cmake
+        DESTINATION lib/cmake/tdoapp
+)
