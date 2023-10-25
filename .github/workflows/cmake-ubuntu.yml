@@ -23,12 +23,12 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install dependencies
-      run: sudo apt update && sudo apt install -y aptitude && sudo aptitude install -y libeigen3-dev libceres-dev libgtest-dev libboost-dev
+      run: sudo apt update && sudo apt install -y aptitude && sudo aptitude install -y libeigen3-dev libceres-dev libgtest-dev
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_TESTS=ON
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_TESTS=ON -DBUILD_EXECUTABLES=OFF
 
     - name: Build
       # Build your program with the given configuration
