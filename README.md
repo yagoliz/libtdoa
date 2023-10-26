@@ -12,9 +12,11 @@ Note: This work is preliminary and it's missing a bit of functionality.
 
 You'll need a few libraries to compile this software:
 
-- Eigen
-- Ceres-Solver
-- GTest (for tests)
+- Eigen (version 3.3)
+- Ceres-Solver (version 2.0+)
+- GTest (Optional, for tests)
+- nlohmann (Optional, for TdoaCLI utility)
+- Boost (Optional, for TdoaCLI utility)
 
 To install them you can use the following commands.
 
