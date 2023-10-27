@@ -16,6 +16,9 @@ build:
   cache:
     paths:
       - "*.o"
+  artifacts:
+    paths:
+      - build
 
 # run tests using the binary built before
 test:
