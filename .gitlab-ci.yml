@@ -9,7 +9,7 @@ build:
   # install the necessary build tools when needed
   before_script:
      - apt update && apt -y install cmake build-essential
-     - apt install -y aptitude && sudo aptitude install -y libeigen3-dev libceres-dev libgtest-dev
+     - apt install -y aptitude && aptitude install -y libeigen3-dev libceres-dev libgtest-dev
   script:
     - mkdir $CI_PROJECT_DIR/build && cmake -B $CI_PROJECT_DIR/build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_TESTS=ON -DBUILD_EXECUTABLES=OFF
       # depending on your build setup it's most likely a good idea to cache outputs to reduce the build time
