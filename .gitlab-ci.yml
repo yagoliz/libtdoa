@@ -12,8 +12,9 @@ build:
     - apt update && apt -y install cmake build-essential
     - apt install -y aptitude && aptitude install -y libeigen3-dev libceres-dev libgtest-dev
     - mkdir $CI_PROJECT_DIR/build && cmake -B $CI_PROJECT_DIR/build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_TESTS=ON -DBUILD_EXECUTABLES=OFF
+    - cmake --build $CI_PROJECT_DIR/build --config $BUILD_TYPE
   script:
-    - ctest -C $BUILD_TYPE
+    - cd build && ctest -C $BUILD_TYPE
   cache:
     paths:
       - "build/*.o"
