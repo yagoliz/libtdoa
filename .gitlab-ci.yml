@@ -25,5 +25,6 @@ test:
   stage: test
   before_script:
     - cd build
+    - apt update && apt -y install cmake
   script:
     - ctest -C $BUILD_TYPE
