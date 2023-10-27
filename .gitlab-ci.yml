@@ -8,23 +8,12 @@ build:
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script:
-     - apt update && apt -y install cmake build-essential
-     - apt install -y aptitude && aptitude install -y libeigen3-dev libceres-dev libgtest-dev
-  script:
+    - rm -Rf build
+    - apt update && apt -y install cmake build-essential
+    - apt install -y aptitude && aptitude install -y libeigen3-dev libceres-dev libgtest-dev
     - mkdir $CI_PROJECT_DIR/build && cmake -B $CI_PROJECT_DIR/build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_TESTS=ON -DBUILD_EXECUTABLES=OFF
-      # depending on your build setup it's most likely a good idea to cache outputs to reduce the build time
-  cache:
-    paths:
-      - "*.o"
-  artifacts:
-    paths:
-      - build
-
-# run tests using the binary built before
-test:
-  stage: test
-  before_script:
-    - cd build
-    - apt update && apt -y install cmake
   script:
     - ctest -C $BUILD_TYPE
+  cache:
+    paths:
+      - "build/*.o"
