@@ -1,0 +1,6 @@
+.build/
+.cmake-build-*/
+.git
+.github
+.gitlab-ci.yml
+templates/
