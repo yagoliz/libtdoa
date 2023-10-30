@@ -13,7 +13,7 @@ set_target_properties(TdoaCLI PROPERTIES
         INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib"
 )
 
-# TdoaREest stuff
+# TdoaRest stuff
 add_executable(TdoaRest TdoaRest.cc)
 target_link_libraries(TdoaRest tdoapp ${Boost_LIBRARIES} Drogon::Drogon)
 

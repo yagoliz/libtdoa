@@ -1,7 +1,9 @@
-FROM ubuntu:latest
+FROM debian:sid
 LABEL authors="Yago Lizarribar"
-ENV PACKAGES ca-certificates uuid-dev zlib1g-dev ninja-build libeigen3-dev libceres-dev libgtest-dev libboost-dev nlohmann-json3-dev libjsoncpp-dev git cmake build-essential libboost-program-options-dev
-ENV BUILD_TYPE Release
+ARG PACKAGES="ca-certificates uuid-dev zlib1g-dev ninja-build libeigen3-dev libceres-dev libgtest-dev libboost-dev \
+nlohmann-json3-dev libjsoncpp-dev git cmake build-essential libboost-program-options-dev libdrogon-dev postgresql-all \
+libsqlite3-dev libmysql++-dev libbrotli-dev libhiredis-dev libyaml-cpp-dev"
+ARG BUILD_TYPE=Release
 
 ENV PORT 8095
 ENV IP "0.0.0.0"
@@ -11,11 +13,6 @@ ENV LOG "/tmp"
 
 # Basic stuff
 RUN apt update && apt install --no-install-recommends -y $PACKAGES
-
-# Get Drogon
-RUN git clone https://github.com/drogonframework/drogon.git
-RUN cd drogon && ./build.sh && cd ..
-RUN rm -rf drogon
 
 # Build our project
 RUN rm -rf $HOME/tdoapp
