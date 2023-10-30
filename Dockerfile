@@ -15,6 +15,7 @@ RUN apt update && apt install --no-install-recommends -y $PACKAGES
 # Get Drogon
 RUN git clone https://github.com/drogonframework/drogon.git
 RUN cd drogon && ./build.sh && cd ..
+RUN rm -rf drogon
 
 # Build our project
 RUN rm -rf $HOME/tdoapp
@@ -29,5 +30,7 @@ RUN cd build && ctest -C BUILD_TYPE
 
 # Install and run
 RUN cd build && ninja install
+WORKDIR $HOME
+RUN rm -rf tdoapp
 
 ENTRYPOINT TdoaRest -p $PORT -i $IP -e "/$API" -t $THREADS -l $LOG
