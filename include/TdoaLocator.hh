@@ -16,12 +16,14 @@
 
 namespace tdoapp {
     // Linearized TDOA equations
-    Eigen::Vector2d initialGuess(const std::vector<Receiver>& receivers);
-    Eigen::Vector2d linearTDOA(const std::vector<Receiver>& receivers);
-    Eigen::Vector2d exactTDOA(const std::vector<Receiver>& receivers, bool getPositive = true);
+    Eigen::Vector2d initialGuess(const std::vector<Receiver> &receivers);
+
+    Eigen::Vector2d linearTDOA(const std::vector<Receiver> &receivers);
+
+    Eigen::Vector2d exactTDOA(const std::vector<Receiver> &receivers, bool getPositive = true);
 
     // Non-linear optimization for TDOA equations
-    Eigen::Vector2d nonlinearOptimization(const std::vector<Receiver>& receivers, const Eigen::Vector2d& initialGuess);
+    Eigen::Vector2d nonlinearOptimization(const std::vector<Receiver> &receivers, const Eigen::Vector2d &initialGuess);
 }
 
 #endif //LIBDTDOA_TDOALOCATOR_H

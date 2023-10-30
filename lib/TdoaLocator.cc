@@ -34,7 +34,7 @@ namespace tdoapp {
         double theta = std::atan2(receivers[1].y - receivers[0].y, receivers[1].x - receivers[0].x);
         Eigen::Matrix2d R;
         R << std::cos(theta), -std::sin(theta),
-             std::sin(theta),  std::cos(theta);
+                std::sin(theta), std::cos(theta);
 
         Eigen::Vector2d s0r = {0.0, 0.0};
         Eigen::Vector2d s1r = R.transpose() * (s1 - s0);
@@ -50,17 +50,17 @@ namespace tdoapp {
         double tau_02 = receivers[0].timestamp - receivers[2].timestamp;
 
         // We extract the values for g and h
-        double g = ((tau_02/tau_01) * b - cx) / cy;
-        double h = (std::pow(c,2) - std::pow(tau_02,2) + tau_01 * tau_02 * (1 - std::pow(b/tau_01,2))) /
-                (2 * cy);
+        double g = ((tau_02 / tau_01) * b - cx) / cy;
+        double h = (std::pow(c, 2) - std::pow(tau_02, 2) + tau_01 * tau_02 * (1 - std::pow(b / tau_01, 2))) /
+                   (2 * cy);
 
         // With this we go for the terms of the quadratic equation
-        double d = -(1 + std::pow(g,2) - std::pow(b/tau_01,2));
-        double e = b * (1 - std::pow(b/tau_01,2)) - 2 * g *h;
-        double f = std::pow(tau_01,2) / 4 * std::pow((1 - std::pow(b/tau_01,2)),2) - std::pow(h,2);
+        double d = -(1 + std::pow(g, 2) - std::pow(b / tau_01, 2));
+        double e = b * (1 - std::pow(b / tau_01, 2)) - 2 * g * h;
+        double f = std::pow(tau_01, 2) / 4 * std::pow((1 - std::pow(b / tau_01, 2)), 2) - std::pow(h, 2);
 
         // Terms for x and y (positions)
-        double discriminant = std::pow(e,2) - 4 * d * f;
+        double discriminant = std::pow(e, 2) - 4 * d * f;
 
         double xp, yp, xm, ym;
         if (discriminant >= 0.0) {
@@ -75,7 +75,7 @@ namespace tdoapp {
 
         // Conversion to absolute coordinates
         // For the positive result
-        Eigen::Vector2d rp = R * Eigen::Vector2d{xp,yp};
+        Eigen::Vector2d rp = R * Eigen::Vector2d{xp, yp};
         rp += s0;
         auto rp0 = rp - s0;
         auto rp1 = rp - s1;
@@ -84,12 +84,13 @@ namespace tdoapp {
         // We need to compare whether the signs are the same for the obtained result and the observed tdoa
         bool multiple = false; // Check if we will have multiple solutions
         if (sgn(rpn) == sgn(tau_01)) {
-            res[0] = rp[0]; res[1] = rp[1];
+            res[0] = rp[0];
+            res[1] = rp[1];
             multiple = true;
         }
 
         // For the negative result
-        Eigen::Vector2d rm = R * Eigen::Vector2d{xm,ym};
+        Eigen::Vector2d rm = R * Eigen::Vector2d{xm, ym};
         rm += s0;
 
         auto rm0 = rm - s0;
@@ -108,26 +109,27 @@ namespace tdoapp {
                 }
             }
 
-            res[0] = rm[0]; res[1] = rm[1];
+            res[0] = rm[0];
+            res[1] = rm[1];
         }
 
         return res;
     }
 
-    Eigen::Vector2d linearTDOA(const std::vector<Receiver>& receivers)  {
+    Eigen::Vector2d linearTDOA(const std::vector<Receiver> &receivers) {
         // Set up for the LS problem
-        Eigen::MatrixXd A(receivers.size()-1,3);
-        Eigen::VectorXd b(receivers.size()-1);
+        Eigen::MatrixXd A(receivers.size() - 1, 3);
+        Eigen::VectorXd b(receivers.size() - 1);
 
-        for (int i = 0; i < receivers.size()-1; i++) {
-            A(i, 0) = -(receivers[0].timestamp - receivers[i+1].timestamp);
-            A(i, 1) = receivers[0].x - receivers[i+1].x;
-            A(i, 2) = receivers[0].y - receivers[i+1].y;
+        for (int i = 0; i < receivers.size() - 1; i++) {
+            A(i, 0) = -(receivers[0].timestamp - receivers[i + 1].timestamp);
+            A(i, 1) = receivers[0].x - receivers[i + 1].x;
+            A(i, 2) = receivers[0].y - receivers[i + 1].y;
 
             b[i] = 0.5 * (
-                    std::pow(receivers[0].timestamp - receivers[i+1].timestamp,2)
+                    std::pow(receivers[0].timestamp - receivers[i + 1].timestamp, 2)
                     + norm_sq(receivers[0].x, receivers[0].y)
-                    - norm_sq(receivers[i+1].x, receivers[i+1].y)
+                    - norm_sq(receivers[i + 1].x, receivers[i + 1].y)
             );
         }
 
@@ -138,11 +140,11 @@ namespace tdoapp {
         } else {
             r = A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
         }
-        return Eigen::Vector2d {r[1], r[2]};
+        return Eigen::Vector2d{r[1], r[2]};
     }
 
     Eigen::Vector2d nonlinearOptimization(const std::vector<Receiver> &receivers,
-                                                          const Eigen::Vector2d &initialGuess) {
+                                          const Eigen::Vector2d &initialGuess) {
         ceres::Problem problem;
         auto x = initialGuess[0];
         auto y = initialGuess[1];
@@ -162,6 +164,6 @@ namespace tdoapp {
         ceres::Solver::Summary summary;
         ceres::Solve(options, &problem, &summary);
 
-        return Eigen::Vector2d{x,y};
+        return Eigen::Vector2d{x, y};
     }
 }

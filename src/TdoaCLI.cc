@@ -26,15 +26,16 @@ struct options {
     std::string output;
 };
 
-int parse_commandline(int argc, char** argv, options &opt) {
+int parse_commandline(int argc, char **argv, options &opt) {
 
     po::options_description desc("TdoaCLI. Command-Line utility to solve TDOA problems.\nAllowed options:");
     desc.add_options()
             ("help,h", "produce help message")
             ("receiver,r", po::value<std::string>(), "JSON file with receiver positions & timestamps")
-            ("method,m", po::value<int>(&opt.optimization_level)->default_value(1), "Method to use (1: linear, 2: nonlinear). Default: 1")
-            ("output,o", po::value<std::string>(&opt.output)->default_value("stdout"), "Where to dump the output: (stdout or file)")
-            ;
+            ("method,m", po::value<int>(&opt.optimization_level)->default_value(1),
+             "Method to use (1: linear, 2: nonlinear). Default: 1")
+            ("output,o", po::value<std::string>(&opt.output)->default_value("stdout"),
+             "Where to dump the output: (stdout or file)");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -71,7 +72,7 @@ int parse_commandline(int argc, char** argv, options &opt) {
     return 0;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     // Command line options
     auto opt = std::make_shared<options>();
     if (parse_commandline(argc, argv, *opt)) {
@@ -88,22 +89,22 @@ int main(int argc, char** argv) {
     // receiver file should contain a vector with a "measurements" field
     // Inside, there should a vector with N positions to analyze
     auto receivers = json::parse(ifs);
-    std::vector<std::array<double,2>> result;
+    std::vector<std::array<double, 2>> result;
     if (receivers.contains("measurements")) {
 
         // Main loop over the received measurements
-        for (const auto& measurement : receivers["measurements"]) {
+        for (const auto &measurement: receivers["measurements"]) {
             // Looping over how many receivers
             std::vector<tdoapp::Receiver> r;
-            for (const auto& [key, values] : measurement.items()) {
+            for (const auto &[key, values]: measurement.items()) {
                 if (values.is_array() && values.size() == 3) {
                     r.emplace_back(values[0].get<double>(),
-                                           values[1].get<double>(),
-                                           values[2].get<double>());
+                                   values[1].get<double>(),
+                                   values[2].get<double>());
                 } else {
                     cerr << "Wrong format for JSON value in measurement. Expected 3-element array" << endl
-                        << "The array assertion was: " << values.is_array() << ". The size was: " << values.size()
-                        << "" << endl;
+                         << "The array assertion was: " << values.is_array() << ". The size was: " << values.size()
+                         << "" << endl;
                 }
             }
 
@@ -112,9 +113,9 @@ int main(int argc, char** argv) {
 
             if (opt->optimization_level == 2) {
                 auto nlls = tdoapp::nonlinearOptimization(r, init);
-                result.emplace_back(std::array<double,2>{nlls[0], nlls[1]});
+                result.emplace_back(std::array<double, 2>{nlls[0], nlls[1]});
             } else {
-                result.emplace_back(std::array<double,2>{init[0], init[1]});
+                result.emplace_back(std::array<double, 2>{init[0], init[1]});
             }
         }
 
@@ -125,15 +126,15 @@ int main(int argc, char** argv) {
 
     // Write output to file or stdout
     auto writeToStdout = opt->output == "stdout";
-    std::function<void(const std::array<double,2>&)> writeFn;
+    std::function<void(const std::array<double, 2> &)> writeFn;
 
     if (writeToStdout) {
-        writeFn = [](const std::array<double,2>& values) {
+        writeFn = [](const std::array<double, 2> &values) {
             std::cout << std::fixed << std::setprecision(5) << "X: " << values[0] << ", Y: " << values[1] << endl;
         };
     } else {
         auto outFile = std::make_shared<std::ofstream>(opt->output);
-        writeFn = [outFile](const std::array<double,2>& values) mutable{
+        writeFn = [outFile](const std::array<double, 2> &values) mutable {
             *outFile << std::fixed << std::setprecision(5) << "X: " << values[0] << ", Y: " << values[1] << endl;
         };
     }
@@ -142,7 +143,7 @@ int main(int argc, char** argv) {
     if (writeToStdout) {
         cout << endl << "Positioning Results" << endl << "----------" << endl;
     }
-    for (const auto pos : result) {
+    for (const auto pos: result) {
         writeFn(pos);
     }
 

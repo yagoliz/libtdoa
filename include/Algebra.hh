@@ -11,11 +11,11 @@
 namespace tdoapp {
 
     inline double norm_sq(const double x, const double y) {
-        return std::pow(x,2) + std::pow(y,2);
+        return std::pow(x, 2) + std::pow(y, 2);
     }
 
     inline double norm(const double x, const double y) {
-        return std::sqrt(std::pow(x,2) + std::pow(y,2));
+        return std::sqrt(std::pow(x, 2) + std::pow(y, 2));
     }
 
     int sgn(double val) {
