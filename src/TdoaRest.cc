@@ -109,9 +109,9 @@ int main(int argc, char **argv) {
                             Json::Value p;
                             if (method == 2) {
                                 auto nlls = tdoapp::nonlinearOptimization(r, init);
-                                p["0"] = nlls[0]; p["1"] = nlls[1];
+                                p["x"] = nlls[0]; p["y"] = nlls[1];
                             } else {
-                                p["0"] = init[0]; p["1"] = init[1];
+                                p["x"] = init[0]; p["y"] = init[1];
                             }
 
                             collections[k] = p;
