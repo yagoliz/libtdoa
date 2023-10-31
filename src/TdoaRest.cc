@@ -3,6 +3,7 @@
 // Copyright (c) 2023 Yago Lizarribar
 
 #include <atomic>
+#include <csignal>
 #include <iostream>
 
 #include <boost/program_options.hpp>
