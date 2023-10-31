@@ -17,8 +17,8 @@ struct DrogonOptions {
     std::string api_endpoint;
     std::string ip_address;
     std::string log_path;
-    int port;
-    int threadNum;
+    int port = 8095;
+    int threadNum = 4;
 };
 
 int parse_commandline(int argc, char **argv, DrogonOptions &opt) {
@@ -58,6 +58,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    // For now, we only need this endpoint
     app().registerHandler(
             drogon_options->api_endpoint,
             [](const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
@@ -138,6 +139,12 @@ int main(int argc, char **argv) {
             },
             {Post});
 
+    LOG_INFO << "Started application with the following parameters: ";
+    LOG_INFO << "\t - IP address: " << drogon_options->ip_address;
+    LOG_INFO << "\t - Port number: " << drogon_options->port;
+    LOG_INFO << "\t - Number of threads: " << drogon_options->threadNum;
+    LOG_INFO << "\t - Logging path: " << drogon_options->log_path;
+
     // Main app loop
     app().setLogPath(drogon_options->log_path)
             .setLogLevel(trantor::Logger::kDebug)
@@ -145,9 +152,4 @@ int main(int argc, char **argv) {
             .setThreadNum(drogon_options->threadNum)
             .run();
 
-    LOG_INFO << "Started application with the following parameters: ";
-    LOG_INFO << "\t - IP address: " << drogon_options->ip_address;
-    LOG_INFO << "\t - Port number: " << drogon_options->port;
-    LOG_INFO << "\t - Number of threads: " << drogon_options->threadNum;
-    LOG_INFO << "\t - Logging path: " << drogon_options->log_path;
 }
