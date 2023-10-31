@@ -2,6 +2,7 @@
 //
 // Copyright (c) 2023 Yago Lizarribar
 
+#include <atomic>
 #include <iostream>
 
 #include <boost/program_options.hpp>
@@ -13,6 +14,14 @@
 namespace po = boost::program_options;
 using namespace drogon;
 
+// Signal handling
+std::atomic<bool> shutdownFlag(false);
+
+void signalHandler(int signum) {
+    shutdownFlag.store(true);
+}
+
+// Tools for command-line parsing
 struct DrogonOptions {
     std::string api_endpoint;
     std::string ip_address;
@@ -51,7 +60,19 @@ int parse_commandline(int argc, char **argv, DrogonOptions &opt) {
     return 0;
 }
 
+// Meat of the function
 int main(int argc, char **argv) {
+    // Register our signal handler
+    signal(SIGINT, signalHandler);
+
+    app().getLoop()->runEvery(1000,
+                              []() {
+        if (shutdownFlag.load()) {
+            LOG_INFO << "Exiting process...\n";
+            app().quit();
+        }
+    });
+
     // Option parsing
     auto drogon_options = std::make_shared<DrogonOptions>();
     if (parse_commandline(argc, argv, *drogon_options)) {
@@ -158,4 +179,5 @@ int main(int argc, char **argv) {
             .setThreadNum(drogon_options->threadNum)
             .run();
 
+    return 0;
 }
