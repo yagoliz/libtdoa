@@ -96,6 +96,7 @@ int main(int argc, char **argv) {
 
                             for (const auto &values : measurement) {
                                 if (values.size() != 3) {
+                                    LOG_WARN << "Wrong measurement file. Size of the file was: " << values.size() << ".\n";
                                     auto resp = HttpResponse::newHttpResponse();
                                     resp->setStatusCode(k400BadRequest);
                                     resp->setBody("Wrong measurement file. Each measurement must contain: "
@@ -106,15 +107,18 @@ int main(int argc, char **argv) {
                             }
 
                             // Run the optimization routines
+                            LOG_INFO << "Starting initial guess via Least Squares\n";
                             auto init = tdoapp::initialGuess(r);
                             Json::Value p;
                             if (method == 2) {
+                                LOG_INFO << "Starting Non-Linear optimization\n";
                                 auto nlls = tdoapp::nonlinearOptimization(r, init);
                                 p["x"] = nlls[0]; p["y"] = nlls[1];
                             } else {
                                 p["x"] = init[0]; p["y"] = init[1];
                             }
 
+                            LOG_INFO << "Finished computing position" << k << "\n";
                             collections[k] = p;
                             k++;
                         }
@@ -123,6 +127,7 @@ int main(int argc, char **argv) {
                         callback(resp);
 
                     } else {
+                        LOG_WARN << "File does not contain any measurement field.\n";
                         auto resp = HttpResponse::newHttpResponse();
                         resp->setStatusCode(k400BadRequest);
                         resp->setBody("File does not contain any measurements. Please make sure to put all your "
@@ -131,9 +136,10 @@ int main(int argc, char **argv) {
                     }
 
                 } else {
+                    LOG_WARN << "Could not find a JSON object with the measurement information\n";
                     auto resp = HttpResponse::newHttpResponse();
                     resp->setStatusCode(k400BadRequest);
-                    resp->setBody("Could not find a JSON object with the measurement information.\n");
+                    resp->setBody("Could not find a JSON object with the measurement information\n");
                     callback(resp);
                 }
             },
@@ -147,7 +153,7 @@ int main(int argc, char **argv) {
 
     // Main app loop
     app().setLogPath(drogon_options->log_path)
-            .setLogLevel(trantor::Logger::kDebug)
+            .setLogLevel(trantor::Logger::kInfo)
             .addListener(drogon_options->ip_address, drogon_options->port)
             .setThreadNum(drogon_options->threadNum)
             .run();
