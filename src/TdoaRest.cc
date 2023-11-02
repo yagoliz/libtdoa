@@ -65,6 +65,7 @@ int parse_commandline(int argc, char **argv, DrogonOptions &opt) {
 int main(int argc, char **argv) {
     // Register our signal handler
     signal(SIGINT, signalHandler);
+    signal(SIGTERM, signalHandler);
 
     app().getLoop()->runEvery(1000,
                               []() {
