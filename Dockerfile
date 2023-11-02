@@ -15,9 +15,9 @@ ENV LOG "/tmp"
 RUN apt update && apt install --no-install-recommends -y $PACKAGES
 
 # Build our project
-RUN rm -rf $HOME/tdoapp
-ADD ./ $HOME/tdoapp/
-WORKDIR $HOME/tdoapp
+RUN rm -rf /tdoapp
+ADD ./ /tdoapp
+WORKDIR /tdoapp
 RUN rm -rf build cmake-build-*
 RUN ls -al
 RUN mkdir build
@@ -27,7 +27,7 @@ RUN cd build && ctest -C BUILD_TYPE
 
 # Install and run
 RUN cd build && ninja install
-WORKDIR $HOME
+WORKDIR /
 RUN rm -rf tdoapp
 
 ENTRYPOINT TdoaRest -p $PORT -i $IP -e "/$API" -t $THREADS -l $LOG
