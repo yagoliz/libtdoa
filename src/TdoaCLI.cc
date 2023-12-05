@@ -22,7 +22,7 @@ using nlohmann::json;
 
 struct options {
     int optimization_level = 1;
-    std::string receiverFile;
+    std::string receiver_file;
     std::string output;
 };
 
@@ -51,7 +51,7 @@ int parse_commandline(int argc, char **argv, options &opt) {
     if (vm.count("receiver")) {
         auto receiverfile = vm["receiver"].as<std::string>();
         cout << "Selected receiver file: " << receiverfile << endl;
-        opt.receiverFile = receiverfile;
+        opt.receiver_file = receiverfile;
     } else {
         cerr << "Must provide receiver positions" << endl;
         cerr << desc << endl;
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
     }
 
     // Get receivers information
-    std::ifstream ifs(opt->receiverFile);
+    std::ifstream ifs(opt->receiver_file);
     if (!ifs.is_open()) {
         cerr << "Error: Could not open receiver file" << endl;
         return 1;
