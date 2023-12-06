@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 # Build options
 option(BUILD_EXECUTABLES "Whether to build the executables" ON)
 option(BUILD_TESTS "Whether to build to tests" OFF)
+option(BUILD_BENCHMARKS "Whether to build the benchmarks" OFF)
 
 # Find required packages
 find_package (Eigen3 REQUIRED NO_MODULE)
@@ -29,6 +30,11 @@ if (BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif (BUILD_TESTS)
+
+# Benchmark
+if (BUILD_BENCHMARKS)
+    add_subdirectory(benchmarks)
+endif (BUILD_BENCHMARKS)
 
 # Installation
 install(TARGETS tdoapp
