@@ -46,7 +46,7 @@ int parse_commandline(int argc, char **argv, options &opt) {
             ("method,m", po::value<int>(&opt.optimization_level)->default_value(1),
              "Method to use (1: linear, 2: nonlinear). Default: 1")
             ("window-size,w", po::value<int>(&opt.window_size)->default_value(1),
-             "Size of the averaging window. Default: 10")
+             "Size of the averaging window. Default: 1")
             ("output,o", po::value<std::string>(&opt.output)->default_value("stdout"),
              "Where to dump the output: (stdout or file)");
 
