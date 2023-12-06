@@ -10,3 +10,9 @@ templates/*
 # Jetbrains stuff
 .idea
 
+# Python env
+.venv
+
+# Benchmarking stuff
+*.json
+
