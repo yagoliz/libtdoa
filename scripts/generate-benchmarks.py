@@ -15,7 +15,7 @@ def main():
     # Argument parsing shenanigans
     parser = argparse.ArgumentParser(
         prog='generate-benchmark.py',
-        description='Generate benchmark files to test tdoapp capa∆bilities',
+        description='Generate benchmark files to test tdoapp capabilities',
         epilog='Project: yagoliz/tdoapp')
 
     parser.add_argument('-f', '--filename', required=True)  # JSON output filename

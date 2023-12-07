@@ -25,6 +25,7 @@ using nlohmann::json;
 struct options {
     int optimization_level = 1;
     int window_size = 1;
+    int precision = 1;
     std::string receiver_file;
     std::string output;
 };
@@ -41,14 +42,16 @@ int parse_commandline(int argc, char **argv, options &opt) {
 
     po::options_description desc("TdoaCLI. Command-Line utility to solve TDOA problems.\nAllowed options:");
     desc.add_options()
-            ("help,h", "produce help message")
+            ("help,h", "Show this message")
             ("receiver,r", po::value<std::string>(), "JSON file with receiver positions & timestamps")
             ("method,m", po::value<int>(&opt.optimization_level)->default_value(1),
-             "Method to use (1: linear, 2: nonlinear). Default: 1")
+             "Method to use. Options: (1: linear, 2: nonlinear). Default: 1")
             ("window-size,w", po::value<int>(&opt.window_size)->default_value(1),
              "Size of the averaging window. Default: 1")
+            ("precision,p", po::value<int>(&opt.precision)->default_value(1),
+             "Size of the averaging window. Options: (0: ns; 1: µs; 2: ms). Default: 1 (µs).")
             ("output,o", po::value<std::string>(&opt.output)->default_value("stdout"),
-             "Where to dump the output: (stdout or file)");
+             "Where to dump the output. Options: (stdout; filename). Default: stdout.");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -76,6 +79,22 @@ int parse_commandline(int argc, char **argv, options &opt) {
         auto window_size = vm["window-size"].as<int>();
         cout << "Averaging window size was set to: " << window_size << "." << endl;
         opt.window_size = window_size;
+    }
+    else {
+        cout << "Window size was not set. Window size of 10 will be used" << endl;
+    }
+
+    // Get the time precision
+    if (vm.count("precision")) {
+        auto precision = vm["precision"].as<int>();
+        if (precision == 0 | precision == 1 | precision == 2) {
+            cout << "Precision was set to: " << precision << "." << endl;
+            opt.precision = precision;
+        } else {
+            cerr << "Unsupported precision level. Only allowed ones are: 0 (ns), 1 (µs) and 2 (ms)." << endl;
+            cerr << "Your choice was: " << precision << endl;
+            return 1;
+        }
     }
     else {
         cout << "Window size was not set. Window size of 10 will be used" << endl;
@@ -190,8 +209,18 @@ int main(int argc, char **argv) {
         }
         // End timer and collect
         const auto end{std::chrono::high_resolution_clock::now()};
-        auto t = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
+        long long t;
+        switch (opt->precision) {
+            case 0:
+                t = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+                break;
+            case 1:
+                t = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                break;
+            case 2:
+                t = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        }
         result.emplace_back(t, estimation[0], estimation[1]);
     }
 
