@@ -30,12 +30,12 @@ int parse_commandline(int argc, char **argv, options &opt) {
 
     po::options_description desc("TdoaCLI. Command-Line utility to solve TDOA problems.\nAllowed options:");
     desc.add_options()
-            ("help,h", "produce help message")
+            ("help,h", "Show this message")
             ("receiver,r", po::value<std::string>(), "JSON file with receiver positions & timestamps")
             ("method,m", po::value<int>(&opt.optimization_level)->default_value(1),
-             "Method to use (1: linear, 2: nonlinear). Default: 1")
+             "Method to use. Options: (1: linear, 2: nonlinear). Default: 1")
             ("output,o", po::value<std::string>(&opt.output)->default_value("stdout"),
-             "Where to dump the output: (stdout or file)");
+             "Where to dump the output. Options: (stdout; filename). Default: stdout.");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -49,9 +49,9 @@ int parse_commandline(int argc, char **argv, options &opt) {
 
     // receiver file is mandatory
     if (vm.count("receiver")) {
-        auto receiverfile = vm["receiver"].as<std::string>();
-        cout << "Selected receiver file: " << receiverfile << endl;
-        opt.receiver_file = receiverfile;
+        auto receiver_file = vm["receiver"].as<std::string>();
+        cout << "Selected receiver file: " << receiver_file << endl;
+        opt.receiver_file = receiver_file;
     } else {
         cerr << "Must provide receiver positions" << endl;
         cerr << desc << endl;
